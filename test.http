@@ -1,0 +1,253 @@
+POST http://127.0.0.1:5000/api/user
+ Content-Type: application/json
+
+#store data
+[
+{
+    "name": "Sakshi",
+    "id": 1
+},
+{
+    "name": "Rahul",
+    "id": 2
+},
+{
+    "name": "Sam",
+    "id": 3
+},
+{
+    "name": "Ben",
+    "id": 4
+}
+]
+
+###
+
+GET http://127.0.0.1:5000/api/users
+
+###
+
+GET http://127.0.0.1:5000/api/user/1
+
+###
+
+GET http://127.0.0.1:5000/api/user/30
+
+###
+
+GET http://127.0.0.1:5000/api/user/xyz
+
+###
+
+DELETE http://127.0.0.1:5000/api/user/3
+
+###
+
+GET http://127.0.0.1:5000/api/users
+
+###
+
+POST http://127.0.0.1:5000/students
+Content-Type: application/json
+
+[
+    {
+        "name": "Hans",
+        "roll_no": 1
+    },
+    {
+        "name": "Emily",
+        "roll_no": 2
+    },
+    {
+        "name": "Ben",
+        "roll_no": 3
+    }
+]
+
+###
+
+GET http://127.0.0.1:5000/students
+
+###
+
+GET http://127.0.0.1:5000/student/2
+
+###
+
+DELETE http://127.0.0.1:5000/student/3
+
+###
+
+PUT http://127.0.0.1:5000/student/2
+Content-Type: application/json
+
+{
+    "name": "Emma",
+    "roll_no": 2
+}
+
+###
+
+POST http://127.0.0.1:5000/students
+ Content-Type: application/json
+
+#store data
+[
+    {"name": "Zoya Mirza", "roll_no": 131},
+    {"name": "Aryan Malhotra", "roll_no": 132},
+    {"name": "Diya Fernandes", "roll_no": 133},
+    {"name": "Laksh Oberoi", "roll_no": 134},
+    {"name": "Tanya Bose", "roll_no": 135}
+]
+
+###
+
+GET http://127.0.0.1:5000/students
+
+###
+GET http://127.0.0.1:5000/student/137
+
+###
+DELETE http://127.0.0.1:5000/student/135
+
+###
+PUT http://127.0.0.1:5000/student/137
+Content-Type: application/json
+
+{
+  "name": "Reyansh Khanna", "roll_no": 137
+}
+
+###
+POST http://127.0.0.1:5000/orm_students
+Content-Type: application/json
+
+[
+{"name": "Ira Bhatia", "roll_no": 145},
+    {"name": "Veer Prakash", "roll_no": 146},
+    {"name": "Myra Kulshreshtha", "roll_no": 147}
+]
+
+###
+GET http://127.0.0.1:5000/orm_students
+
+###
+GET http://127.0.0.1:5000/orm_student/147
+
+###
+DELETE http://127.0.0.1:5000/orm_student/5
+
+###
+PUT http://127.0.0.1:5000/orm_student/147
+Content-Type: application/json
+
+{
+    "name": "Ira Bhatia",
+    "roll_no": 147
+}
+
+###
+POST http://127.0.0.1:5000/student_data
+Content-Type: application/json
+
+[
+     {"name": "Divya Bhatia", "roll_no": 138},
+    {"name": "Ankit Solanki", "roll_no": 139},
+    {"name": "Pallavi Ghosh", "roll_no": 140}
+]
+
+###
+POST http://127.0.0.1:5000/marks_data
+Content-Type: application/json
+
+{
+    "subject": "Maths",
+    "marks": 98,
+    "student_roll_no": 140
+}
+
+###
+POST http://127.0.0.1:5000/user
+Content-Type: application/json
+
+{
+    "id": 4,
+    "username": "Billie"
+}
+
+###
+POST http://127.0.0.1:5000/profile
+Content-Type: application/json
+
+{
+    "id": 1,
+    "bio": "",
+    "user_id": 4
+}
+
+###
+POST http://127.0.0.1:5000/students
+Content-Type: application/json
+
+{
+    "id": 5,
+    "name": "Ariana"
+}
+
+###
+POST http://127.0.0.1:5000/courses
+Content-Type: application/json
+
+{
+    "id": 2,
+    "course_name": "Maths"
+}
+
+###
+POST  http://127.0.0.1:5000/signup
+Content-Type: application/json
+
+{
+    "username" : "Jean",
+    "password" : "Jean@12345"
+}
+
+###
+POST http://127.0.0.1:5000/login
+Content-Type: application/json
+
+{
+     "username": "Jean",
+     "password" : "Jean@12345"
+}
+
+###
+GET http://127.0.0.1:5000/profile
+
+###
+GET http://127.0.0.1:5000/profile1
+
+###
+POST http://127.0.0.1:5000/logins
+Content-Type: application/json
+
+{
+    "username": "admin",
+    "password" : "1234"
+}
+
+###
+GET http://127.0.0.1:5000/profiles
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc3ODg1MDAwMSwianRpIjoiZGM0NWFhZjMtOThiYS00OWIyLTlmYjEtOTU0YWVjOTQ4ZTkzIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6ImFkbWluIiwibmJmIjoxNzc4ODUwMDAxLCJjc3JmIjoiNGNhYTkyYTMtYzEwYS00OTI2LWJkYjgtODE5YTFkNzlkNWIzIiwiZXhwIjoxNzc4ODUxODAxfQ.oem6uqaLZ0JSyTSdgr_VVCwxvXiWYDD6VyWmPm6tx34
+
+###
+http://127.0.0.1:5000/set
+
+###
+http://127.0.0.1:5000/get
+
+###
+http://127.0.0.1:5000/delete
+
+

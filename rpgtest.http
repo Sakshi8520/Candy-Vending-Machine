@@ -1,0 +1,56 @@
+POST http://127.0.0.1:5000/signup
+Content-Type: application/json
+
+[
+  { "username": "bladeDancer", "password": "spin50", "level": 6 },
+  { "username": "thunderClap", "password": "shock51", "level": 15},
+  { "username": "sandWraith", "password": "desert52", "level": 5 }
+]
+
+###
+POST http://127.0.0.1:5000/login
+Content-Type: application/json
+
+{
+    "id": 4, "username": "knight001", "password": "sword001" 
+}
+
+###
+GET http://127.0.0.1:5000/profile
+
+###
+POST http://127.0.0.1:5000/quest
+Content-Type: application/json
+
+[
+   
+  {
+    "title": "Patrol the Northern Wall",
+    "difficulty": "easy",
+    "xp_reward": 12,
+    "status": "not_started",
+    "player_id": 41
+  },
+  {
+    "title": "Retrieve the Lost Artifact",
+    "difficulty": "medium",
+    "xp_reward": 35,
+    "status": "in_progress",
+    "player_id": 42
+  },
+  {
+    "title": "Eliminate the Assassin",
+    "difficulty": "hard",
+    "xp_reward": 65,
+    "status": "not_started",
+    "player_id": 43
+  },
+  {
+    "title": "Defend the Castle Gates",
+    "difficulty": "medium",
+    "xp_reward": 40,
+    "status": "completed",
+    "player_id": 44
+  }
+  
+]

@@ -1,0 +1,20 @@
+POST http://127.0.0.1:5000/auth/register
+Content-Type: application/json
+
+{
+    "username": "Maddy123",
+    "password": "M45Perez",
+    "email": "Maddym78@gmail.com"
+}
+###
+
+POST http://127.0.0.1:5000/auth/login
+Content-Type: application/json
+
+{
+    "username": "Maddy123",
+    "password": "M45Perez"
+}
+###
+GET http://127.0.0.1:5000/auth/me
+Authorization: Bearer "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc4MDE0Mjg3NCwianRpIjoiMGIwZDliNjQtNTRiNC00NzFlLTgxMWMtZDJmMGY0ZjViMGEyIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6Ik1hZGR5MTIzIiwibmJmIjoxNzgwMTQyODc0LCJjc3JmIjoiMjJlYTdhYWMtZTAyYS00ZTQ1LTlhMWItOWQyZDc1ZWJjMTEwIiwiZXhwIjoxNzgwMTQ0MDc0fQ.CfWmVuJBbvYjR7htRdfUmtPtJlZg_9XizUbVVUiCkck"
