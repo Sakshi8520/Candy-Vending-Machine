@@ -1,0 +1,2 @@
+from app.extensions import db
+print(db.engine.execute("PRAGMA table_info(user_candy_transaction)").fetchall())
