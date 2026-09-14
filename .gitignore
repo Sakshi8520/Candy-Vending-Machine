@@ -4,3 +4,13 @@ __pycache__/
 venv/
 instance/.env
 candy.db
+.env
+.env.*
+!.env.example
+instance/
+*.sqlite
+*.sqlite3
+app/logs/
+app/uploads/
+*.log
+downloaded.jfif

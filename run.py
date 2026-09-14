@@ -10,10 +10,10 @@ if __name__ == "__main__":
     from sqlalchemy import text
 
     with app.app_context():
-        result = db.session.execute(
-            text("SELECT name FROM sqlite_master WHERE type='table';")
-        )
-        print(result.fetchall())
+        #result = db.session.execute(
+            #text("SELECT name FROM sqlite_master WHERE type='table';")
+        #)
+        #print(result.fetchall())
         print("Inside if")
 
     app.run(debug=True)
