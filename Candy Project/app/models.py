@@ -10,9 +10,10 @@ class User(db.Model):
 	ticket = db.relationship("Ticket",back_populates="user")
 class Candy(db.Model):
 	id = db.Column(db.Integer,primary_key=True)
-	candy_name = db.Column(db.String(100),unique=True)
+	candy_name = db.Column(db.String(100), unique=True)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
 	price = db.Column(db.Integer)
 	stock = db.Column(db.Integer)
+	image_filename = db.Column(db.String(255),nullable=True)
 	purchases = db.relationship("UserCandyTransaction",back_populates="candy")
 
 class UserCandyTransaction(db.Model):
@@ -30,7 +31,7 @@ class Ticket(db.Model):
 	id = db.Column(db.Integer,primary_key=True)
 	user_id = db.Column(db.Integer,db.ForeignKey("user.id"))
 	status = db.Column(db.String(50),nullable=False)
-	transaction_id = db.Column(db.Integer,unique=True)
+	transaction_id = db.Column(db.Integer, db.Sequence("ticket_transaction_id_seq"), unique=True,)
 	user = db.relationship("User",back_populates="ticket")
 
 class Wallet(db.Model):
