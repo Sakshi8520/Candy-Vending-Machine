@@ -27,168 +27,21 @@ from app.extensions import limiter
 from flask_jwt_extended import get_jwt
 from app.token_blocklist import revoked_tokens
 
-from PIL import Image
 
-ALLOWED_EXTENSIONS = {"jpg","jpeg","png","jfif"}
-ALLOWED_MIMETYPES = {"image/jpeg","image/png"}
+
+
 schema = CandyPurchaseSchema()
 user_schema = UserSchema()
-#JSON body-
+
 auth_bp = Blueprint("auth",__name__)
 @auth_bp.post("/test_candy")
 def Test_auth():
 	data = request.get_json()
 	candy_id = data.get("candy_id")
 	quantity = data.get("quantity")
-
-	#if candy_id is None:
-		#return {"error":"candy_id is required"}, 400
-	#if not isinstance(candy_id,int):
-		#return {"error":"candy_id must be an integer"},400
-	#if quantity is None:
-		#return {"erorr":"quantity is required"},400
-	#if not isinstanc(quantity,int):
-		#return {"error":"quantity must be an integer"},400
-	#if quantity <= 0:
-		#return {"error":"quantity must be greater than 0"},400
-	#return {
-	#"candy_id": candy_id,
-	#"quantity": quantity
-	#}
 	current_app.logger.info(f"purchase requested: candy_id={candy_id},quantity={quantity}")
 	result = schema.load(data)
 	return jsonify(result)
-
-
-#Test Gunicorn
-@auth_bp.get("/debug/workers")
-def debug_workers():
-	return {
-	"process_id":os.getpid(),
-	"thread_id":threading.get_ident()
-	}
-
-#Test gunicorn workers vs threads
-#I/O route
-@auth_bp.route("/slow")
-def slow():
-	time.sleep(5)
-	return "Finised"
-
-#Test CPU heavy route
-@auth_bp.route("/cpu")
-def cpu():
-	start = time.time()
-	while time.time() - start < 5:
-		pass 
-	return "CPU work finished"
-
-#path parameters-
-@auth_bp.get("/test_user/<int:user_id>")
-def test_user(user_id):
-	return {
-	"user_id":user_id,
-	"type":str(type(user_id))
-	}
-
-#Query parameter-
-@auth_bp.get("/test_search")
-def test_search():
-	name = request.args.get("name")
-	age = request.args.get("age",type=int)
-	return {
-	"name": name,
-	"age": age,
-	"age_type": str(type(age))
-	}
-
-#request.header
-@auth_bp.get("/test_headers")
-def test_headers():
-	return {
-	"content_type": request.headers.get("Content-Type"),
-	"user_agent": request.headers.get("User-Agent"),
-	"candy_test": request.headers.get("X-Candy-Test")
-	}
-
-#Form data
-@auth_bp.post("/test_form")
-def test_form():
-	name = request.form.get("name")
-	age = request.form.get("age")
-	return {
-	"name":name,
-	"age":age,
-	"age_type":str(type(age))
-	}
-
-#PATCH + Partial validation
-@auth_bp.patch("/test_partial")
-def test_partial():
-	data = request.get_json()
-	result = user_schema.load(data,partial=True)
-	return {
-	"validated":result
-	}
-
-#File Upload
-@auth_bp.post("/test_upload")
-def test_upload():
-	file = request.files.get("file")
-	if not file:
-		return {"error":"No file uploaded"},400
-	filename = secure_filename(file.filename)
-	if not filename:
-		return {"error":"Invalid filename"},400
-	extension = filename.rsplit(".",1)[-1].lower()
-	if extension not in ALLOWED_EXTENSIONS:
-		return {"error":"File type not allowed"},400
-	#if file.content_type not in ALLOWED_MIMETYPES:
-		#return {"error":"File type not allowed"},400
-	try:
-		image = Image.open(file)
-		image.verify()
-	except Exception:
-		return {"error":"Invalid image file"},400
-	file.seek(0)
-	upload_folder = os.path.join(current_app.root_path, "uploads")
-	os.makedirs(upload_folder,exist_ok=True)
-	file.save(os.path.join(upload_folder,file.filename))
-	
-	#dont trust filename cause its controlled by client
-	filename = secure_filename(file.filename)
-	unique_filename = f"{uuid.uuid4()}_{filename}"
-	return {
-		"original": file.filename,
-		"safe": filename,
-		"content_type":file.content_type,
-		"name":file.name,
-		"message": "File uploaded successfully"
-			}
-
-#Multiple file uploads
-@auth_bp.post("/test_multiple_upload")
-def test_multiple_upload():
-	files = request.files.getlist("files")
-	return {
-		"count":len(files),
-		"filenames":[file.filename for file in files]
-	}
-
-#file+normal form data together
-@auth_bp.post("/test_form_upload")
-def test_form_upload():
-	name = request.form.get("name")
-	price = request.form.get("price")
-	if not isinstance(price,int):
-		return {"error":"Invalid type"},400
-	else:
-		file = request.files.get("file")
-		return {
-			"name":name,
-			"price":price,
-			"filename":file.filename if file else None
-		}
 
 @auth_bp.get("/candies")
 def get_candy():
@@ -196,8 +49,8 @@ def get_candy():
 	max_price = request.args.get("max_price",type=int)
 	search = request.args.get("search")
 	query = Candy.query
-	#if not candy:
-		#raise CandyNotFoundError()
+	if not candy:
+		raise CandyNotFoundError()
 	if min_price is not None:
 		query = query.filter(Candy.price>=min_price)
 	if max_price is not None:
@@ -227,7 +80,6 @@ def upload_candy_image(candy_id):
 	os.makedirs(upload_folder,exist_ok=True)
 	file_path = os.path.join(upload_folder,filename)
 	file.save(file_path)
-	#Remember filename in database
 	candy.image_filename = filename
 	db.session.commit()
 	return {
@@ -245,24 +97,18 @@ def get_candy_image(candy_id):
 	if not candy.image_filename:
 		return {"error":"Candy has no image"},404
 	upload_folder = os.path.join(current_app.root_path,"uploads")
-	#1. return the file directly
-	#return send_from_directory(upload_folder,candy.image_filename)
-	#2. return a URL 
 	return {
 	"id":candy.id,
 	"candy_name":candy.candy_name,
-	#"image_url":f"/auth/get_candies/{candy.id}/image"
 	"image_url": url_for("auth.get_candy_image",candy_id=candy.id)
 	}
 
 
-#Pagination
-@auth_bp.get("/test_pagination")
+@auth_bp.get("/pagination")
 @limiter.limit("30 per minute")
-def test_pagination():
+def pagination():
 	page = request.args.get("page",1,type=int)
 	per_page = request.args.get("per_page",2,type=int)
-	#name = request.args.get("name")
 	search = request.args.get("search")
 	if page < 1:
 		return {"error":"Page must be atleast 1"},400
@@ -277,12 +123,6 @@ def test_pagination():
 	#If page doesnt exists
 	if page > candies.pages and candies.total > 0:
 		return {"error":"Page not found"},404
-		#Logging-
-	current_app.logger.debug("This is debug")
-	current_app.logger.info("Candy endpoint was called")
-	current_app.logger.warning("This is warning")
-	current_app.logger.error("This is error")
-	current_app.logger.critical("This is critical")
 	schema = CandySchema(many=True)
 	#many=True means list of candies(multiple objects)
 	return {
@@ -295,30 +135,12 @@ def test_pagination():
 	"has_prev": candies.has_prev,
 	"next_num": candies.next_num,
 	"prev_num": candies.prev_num},
-	#"data": [{
-	#"id": candy.id,
-	#"name": candy.candy_name
-	#} for candy in candies.items
-	#]
 	"data": schema.dump(candies.items)
 	}
 
-#Test logging error-
-@auth_bp.get("/test_logging_error")
-def test_logging_error():
-	try:
-		number = 10/0
-		return {"number":number}
-	except Exception:
-		current_app.logger.exception("Something went wrong")
-		return {"error":"Something went wrong"},500
 
 
-#rate limiter
-@auth_bp.route("/test_rate")
-@limiter.limit("1 per minute")
-def test_rate():
-	return {"message":"Done"}
+
 #Sign up
 @auth_bp.route("/sign_up",methods=["POST"])
 @limiter.limit("5 per minute")
@@ -350,22 +172,7 @@ def sign_up():
 	return jsonify({"msg":f'You are registered successfully {new_user.username}, you got a {new_wallet.balance} worth welcome bonus'})
 
 
-#Database Transactions
-@auth_bp.post("/test_transaction/<int:wallet_id>/<int:candy_id>")
-def test_transaction(wallet_id,candy_id):
-	wallet = Wallet.query.get(wallet_id)
-	candy = Candy.query.get(candy_id)
-	print("BEFORE:",wallet.balance,candy.stock)
-	try:
-		wallet.balance -= 100
-		candy.stock -= 1
-		print("AFTER CHANGES:", wallet.balance,candy.stock)
-		#raise Exception("Intentional transaction failure")
-		db.session.commit()
-	except Exception:
-		db.session.rollback()
-		raise 
-	return {"message":"Transaction Successful"}
+
 #Log in
 @auth_bp.route("/users/log_in",methods=["POST"])
 @limiter.limit("5 per minute")
@@ -378,9 +185,6 @@ def log_in():
 	print("User object:", user)
 
 	if user:
-		print("Stored:", user.password)
-		print("Entered:", password)
-		print("Match:", check_password_hash(user.password, password))
 		if check_password_hash(user.password,password):
 			access_token = create_access_token(identity=username)
 			refresh_token = create_refresh_token(identity=username)
@@ -409,13 +213,13 @@ def logout_refresh():
 #Refresh route
 @auth_bp.post("/login/refresh")
 @jwt_required(refresh=True)
-#@jwt_required(refresh=True) means only refresh token is allowed
 def refresh():
 	username = get_jwt_identity()
 	new_access_token = create_access_token(identity=username)
 	return {
 	"access_token":new_access_token
 	}
+	
 @auth_bp.route("/users/me",methods=["GET"])
 @jwt_required()
 def me():
