@@ -62,6 +62,54 @@ The project started with SQLite and has since been migrated to PostgreSQL using 
 
 ---
 
+
+## Setup
+
+### 1. Clone the repository
+
+git clone https://github.com/Sakshi8520/Candy-Vending-Machine.git
+cd Candy-Vending-Machine
+
+### 2. Create and activate a virtual environment
+
+Windows:
+
+python -m venv venv
+venv\Scripts\activate
+
+Linux / macOS:
+
+python3 -m venv venv
+source venv/bin/activate
+
+### 3. Install dependencies
+
+pip install -r requirements.txt
+
+### 4. Configure environment variables
+
+Create a `.env` file in the project root:
+
+DATABASE_URL=postgresql://username:password@localhost:5432/candy_db
+JWT_SECRET_KEY=your-secret-key
+FLASK_ENV=development
+
+Replace the database credentials with your local PostgreSQL configuration.
+
+### 5. Run database migrations
+
+flask db upgrade
+
+### 6. Start the application
+
+python run.py
+
+The API will be available at:
+
+http://127.0.0.1:5000
+
+---
+
 ## Architecture
 
 The application uses Flask's application factory pattern and separates functionality using Blueprints.
