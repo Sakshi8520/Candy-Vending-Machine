@@ -19,6 +19,7 @@ from app.extensions import limiter
 from app.token_blocklist import revoked_tokens
 from app.middleware import SimpleMiddleware
 from app.middleware import SecondMiddleware
+from flask_cors import CORS 
 
 
 
@@ -105,7 +106,7 @@ def create_app():
 	def unauthorized_token_callback(error):
 		return jsonify({
 			"error":"invalid_token",
-			"message":"Authrntication token is required"
+			"message":"Authentication token is required"
 			}),401
 
 	
@@ -128,6 +129,8 @@ def create_app():
 		app.config.from_object(ProductionConfig)
 	else:
 		app.config.from_object(DevelopmentConfig)
+
+	CORS(app,origins=app.config["FRONTEND_ORIGIN"],supports_credentials=True)
 
 	#logging-
 	log_folder = os.path.join(app.root_path,"logs")
