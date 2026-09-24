@@ -455,7 +455,7 @@ def buy_candy():
 		return jsonify({"msg":"quantity must be greater than 0"}),400
 	
 	try:
-		user = User.query.filter_by(username=current_user).first
+		user = User.query.filter_by(username=current_user).first()
 
 		if not user:
 			return jsonify({"msg":"User not found"}),404
