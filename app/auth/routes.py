@@ -480,6 +480,7 @@ def buy_candy():
 		total_price = candy.price * quantity
 
 		if wallet.balance < total_price:
+			current_app.logger.warning("Purchase attempted with insufficient balance: user_id=%s candy_id=%s", user.id, candy.id)
 			raise InsufficientBalanceError()
 		
 		
@@ -508,11 +509,13 @@ def buy_candy():
 		db.session.add(new_transaction)
 		new_ticket.status = "Completed"
 		db.session.commit()
+		current_app.logger.info("Candy purchased successfully: user_id=%s candy_id=%s quantity=%s",user.id,candy.id,quantity)
 		return jsonify({"msg":"Purchase Successful",
 					"Ticket_id":new_ticket.id})
 
 	except Exception:
 		db.session.rollback()
+		current_app.logger.exception("Purchase failed")
 		raise
 		
 

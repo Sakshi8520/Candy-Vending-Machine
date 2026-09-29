@@ -1,6 +1,7 @@
 from datetime import timedelta
 import os 
 from dotenv import load_dotenv
+import logging
 load_dotenv()
 
 class Config:
@@ -18,17 +19,23 @@ class Config:
 	JWT_COOKIE_HTTPONLY = True
 	FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN")
 	UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER")
+	LOG_LEVEL = logging.INFO
 
 class DevelopmentConfig(Config):
 	DEBUG = True
 	TESTING = False
+	LOG_LEVEL = logging.DEBUG
 	#SQLALCHEMY_DATABASE_URI = "postgresql://localhost/candy_dev"
 
 class ProductionConfig(Config):
 	DEBUG = False
 	TESTING = False
+	JWT_COOKIE_SECURE = True
 	#SQLALCHEMY_DATABASE_URI = "postgresql://localhost/candy"
 	
 class TestingConfig(Config):
-	DEBUG = True
+	SQLALCHEMY_DATABASE_URI = os.getenv("TEST_DATABASE_URL")
+	DEBUG = False
 	TESTING = True
+	LOG_LEVEL = logging.DEBUG
+	PROPAGATE_EXCEPTIONS = True

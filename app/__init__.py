@@ -1,7 +1,5 @@
 from flask import Flask,request,jsonify,current_app
 from app.extensions import db,jwt,migrate
-from app.config import Config
-from datetime import timedelta
 from app.auth.routes import auth_bp
 from app.admin.routes import admin_bp
 from app import models
@@ -11,7 +9,7 @@ from app.exceptions import CandyNotFoundError
 from app.exceptions import TicketNotFoundError
 from app.exceptions import OutofStockError
 import os 
-from app.config import DevelopmentConfig,ProductionConfig
+from app.config import DevelopmentConfig,ProductionConfig,TestingConfig
 from marshmallow.exceptions import ValidationError
 import logging
 from logging.handlers import RotatingFileHandler
@@ -124,34 +122,73 @@ def create_app():
 			"message":"This token has been revoked"
 			}),401
 	#Environment-
+	#reusable function for environment configuration validation-
+	def require_env(name):
+		value = os.getenv(name)
+		if not value:
+			raise ValueError(f"{name} is required")
+		return value 
 	environment = os.getenv("FLASK_ENV","development")
+	if environment not in {"development","production", "testing"}:
+		raise ValueError(f"Invalid Flask_ENV: {environment}")
+	
 	if environment == "production":
 		app.config.from_object(ProductionConfig)
+		
+	elif environment == "testing":
+		app.config.from_object(TestingConfig)
 	else:
 		app.config.from_object(DevelopmentConfig)
+	if environment == "testing":
+		require_env("TEST_DATABASE_URL")
+	else: 
+		require_env("DATABASE_URL")
+	require_env("JWT_SECRET_KEY")
+	require_env("SECRET_KEY")
+	require_env("FRONTEND_ORIGIN")
+	require_env("UPLOAD_FOLDER")
+	if environment == "production":
+		if len(app.config["JWT_SECRET_KEY"]) < 32:
+			raise ValueError("JWT_SECRET_KEY is too short for production")
+		if len(app.config["SECRET_KEY"]) < 32:
+			raise ValueError("SECRET_KEY is too short for production")
+
+	
+
 
 	CORS(app,origins=app.config["FRONTEND_ORIGIN"],supports_credentials=True)
 
 	#logging-
+	app.logger.handlers.clear()
+	app.logger.propagate = False
 	log_folder = os.path.join(app.root_path,"logs")
 	os.makedirs(log_folder,exist_ok=True)
 	log_file = os.path.join(log_folder,"app.log")
 	#file_handler = logging.FileHandler(log_file)
 	#Log rotates-
-	file_handler = RotatingFileHandler(log_file,maxBytes=1024,backupCount=3)
-	file_handler.setLevel(logging.INFO)
+	file_handler = RotatingFileHandler(log_file,maxBytes=5*1024*1024,backupCount=3)
+	file_handler.setLevel(app.config["LOG_LEVEL"])
 	formatter = logging.Formatter("%(asctime)s %(levelname)s in %(module)s: %(message)s")
 	file_handler.setFormatter(formatter)
 	app.logger.addHandler(file_handler)
-
+	#terminal/stdout
+	stream_handler = logging.StreamHandler()
+	stream_handler.setLevel(app.config["LOG_LEVEL"])
+	stream_handler.setFormatter(formatter)
+	app.logger.addHandler(stream_handler)
+	print("HANDLERS:", app.logger.handlers)
+	print("PROPAGATE:", app.logger.propagate)
 	
 	app.config["RATELIMIT_HEADERS_ENABLED"] = True
 	db.init_app(app)
-	with app.app_context():
-		db.create_all()
+	#dont want to create tables in production 
+	if (not app.config["TESTING"] and app.config["DEBUG"]) or app.config["TESTING"]:
+		with app.app_context():
+			db.create_all()
 	migrate.init_app(app,db)
 	jwt.init_app(app)
 	limiter.init_app(app)
+
 	app.register_blueprint(auth_bp,url_prefix="/auth")
 	app.register_blueprint(admin_bp,url_prefix="/admin")
 	app.wsgi_app = SimpleMiddleware(app.wsgi_app)
