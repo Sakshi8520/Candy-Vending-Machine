@@ -58,7 +58,7 @@ The project started with SQLite and has since been migrated to PostgreSQL using 
 - **Marshmallow**
 - **Flask-Limiter**
 - **Gunicorn**
-- **Nginx** *(deployment work in progress)*
+- **Nginx**
 
 ---
 
@@ -135,24 +135,51 @@ The project was initially developed using SQLite and later migrated to PostgreSQ
 
 Flask-Migrate and Alembic are used to manage database schema changes.
 
-The application reads database configuration and secrets from environment variables rather than storing credentials in the repository.
+The application uses SQLAlchemy's database connection pooling to manage PostgreSQL connections efficiently. I explored and tested concepts including:
 
+- Connection lifecycle
+- Connection pool size
+- Maximum overflow connections
+- Active/current connections
+- Connection checkout and check-in
+- Connection timeouts
+- Connection recycling
+- Pool exhaustion
+- Connection behavior under multiple requests
+
+The application reads database configuration and secrets from environment variables rather than storing credentials in the repository.
 ---
 
-## Production & Deployment Learning
+## Production & Deployment
 
-I am currently working through running the Flask application in a more production-oriented setup using:
+The application is being developed and tested in a production-oriented setup using:
 
 - Gunicorn as the WSGI server
 - Nginx as a reverse proxy
 - PostgreSQL as the database
-- Gunicorn worker/thread configuration
+- Gunicorn worker configuration
 - WSGI application configuration
+- Nginx HTTPS/TLS configuration
+- A local CA certificate for HTTPS testing
+- HTTP to HTTPS redirection
+- Security headers including HSTS
 - Local Linux/WSL deployment environment
 
-The deployment setup is an ongoing part of the project as I learn how the individual components work together.
+This setup is primarily a learning and development environment used to understand how a Flask application is served and secured behind Nginx.
 
 ---
+
+## Testing
+
+The project uses pytest for automated API testing.
+
+Current tests cover:
+
+- User login
+- Candy purchase flow
+- Purchase-related database behavior
+
+The test environment uses a separate PostgreSQL database to avoid interfering with development data.
 
 ## What I'm Learning Through This Project
 
@@ -176,6 +203,14 @@ Some of the concepts explored include:
 - Gunicorn workers and threads
 - Reverse proxies
 - Application configuration and environment variables
+- Automated API testing with pytest
+- Database connection lifecycle and connection pooling
+- Pool size, overflow, checkout/check-in, timeouts, and recycling
+- HTTPS/TLS
+- CA certificates and certificate validation
+- Nginx TLS termination
+- HTTP to HTTPS redirection
+- HSTS
 
 ---
 
@@ -183,14 +218,14 @@ Some of the concepts explored include:
 
 Planned improvements include:
 
-- **pytest** and automated API testing
-- **Redis** for token blocklists and rate limiting
+- Expand pytest API test coverage
+- Redis for token blocklists and rate limiting
 - Service-layer separation for business logic
 - Docker containerization
 - API documentation
 - Further production deployment improvements
 - More robust production configuration
-
+- Database performance and production tuning
 ---
 
 ## Project Status
