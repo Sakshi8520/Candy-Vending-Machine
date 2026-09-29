@@ -146,7 +146,8 @@ The application uses SQLAlchemy's database connection pooling to manage PostgreS
 - Connection recycling
 - Pool exhaustion
 - Connection behavior under multiple requests
- The application reads database configuration and secrets from environment variables rather than storing credentials in the repository.
+
+The application reads database configuration and secrets from environment variables rather than storing credentials in the repository.
 ---
 
 ## Production & Deployment
