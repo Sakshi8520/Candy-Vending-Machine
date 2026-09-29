@@ -148,6 +148,7 @@ The application uses SQLAlchemy's database connection pooling to manage PostgreS
 - Connection behavior under multiple requests
 
 The application reads database configuration and secrets from environment variables rather than storing credentials in the repository.
+
 ---
 
 ## Production & Deployment
@@ -178,6 +179,8 @@ Current tests cover:
 - User login
 - Candy purchase flow
 - Purchase-related database behavior
+
+---
 
 The test environment uses a separate PostgreSQL database to avoid interfering with development data.
 
