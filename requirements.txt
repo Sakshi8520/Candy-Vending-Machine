@@ -26,3 +26,4 @@ SQLAlchemy==2.0.51
 typing_extensions==4.16.0
 Werkzeug==3.1.8
 wrapt==2.4.0
+Flask-Cors==6.0.5
