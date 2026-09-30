@@ -6,6 +6,10 @@ The project started with SQLite and has since been migrated to PostgreSQL using 
 
 ---
 
+[![Tests](https://github.com/Sakshi8520/Candy-Vending-Machine/actions/workflows/tests.yml/badge.svg)](https://github.com/Sakshi8520/Candy-Vending-Machine/actions/workflows/tests.yml)
+
+---
+
 ## Features
 
 ### Authentication & Authorization
