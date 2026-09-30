@@ -180,6 +180,8 @@ Current tests cover:
 - Candy purchase flow
 - Purchase-related database behavior
 
+Implemented CI with GitHub Actions to automatically run pytest against a PostgreSQL test database on pushes and pull requests
+
 ---
 
 The test environment uses a separate PostgreSQL database to avoid interfering with development data.
