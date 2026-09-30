@@ -14,6 +14,29 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: candy_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d candy_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      FLASK_ENV: testing
+      TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/candy_test
+      JWT_SECRET_KEY: test-jwt-secret-key-for-ci-only-123456789
+      SECRET_KEY: test-secret-key-for-ci-only-123456789
+      FRONTEND_ORIGIN: http://localhost:3000
+      UPLOAD_FOLDER: app/uploads
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
