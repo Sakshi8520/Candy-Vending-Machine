@@ -468,6 +468,7 @@ def buy_candy():
 		#Refresh wallet with a lock (lock candy first then candy and not change this sequence to avoid deadlock)
 
 		wallet = (Wallet.query.filter_by(user_id=user.id).with_for_update().first())
+		print("PURCHASE WALLET BALANCE:", wallet.balance)
 		if not wallet:
 			return jsonify({"msg":"Wallet not found"}),404
 
