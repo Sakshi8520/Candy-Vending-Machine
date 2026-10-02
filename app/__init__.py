@@ -176,8 +176,8 @@ def create_app():
 	stream_handler.setLevel(app.config["LOG_LEVEL"])
 	stream_handler.setFormatter(formatter)
 	app.logger.addHandler(stream_handler)
-	print("HANDLERS:", app.logger.handlers)
-	print("PROPAGATE:", app.logger.propagate)
+	#print("HANDLERS:", app.logger.handlers)
+	#print("PROPAGATE:", app.logger.propagate)
 	
 	app.config["RATELIMIT_HEADERS_ENABLED"] = True
 	db.init_app(app)
