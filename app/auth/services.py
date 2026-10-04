@@ -195,6 +195,31 @@ def test_form_upload():
 			"filename":file.filename if file else None
 		}
 
+
+#Database Transactions
+@auth_bp.post("/test_transaction/<int:wallet_id>/<int:candy_id>")
+def test_transaction(wallet_id,candy_id):
+	wallet = Wallet.query.get(wallet_id)
+	candy = Candy.query.get(candy_id)
+	print("BEFORE:",wallet.balance,candy.stock)
+	try:
+		wallet.balance -= 100
+		candy.stock -= 1
+		print("AFTER CHANGES:", wallet.balance,candy.stock)
+		#raise Exception("Intentional transaction failure")
+		db.session.commit()
+	except Exception:
+		db.session.rollback()
+		raise 
+	return {"message":"Transaction Successful"}
+
+@auth_bp.route("/test_cookie")
+def test_cookie():
+	response = make_response({"msg":"cookie set"})
+	response.set_cookie("candy_test","Kitkat",httponly=True,secure=False,samesite="None")
+	return response
+
+
 @auth_bp.get("/candies")
 def get_candy():
 	min_price = request.args.get("min_price",type=int)
