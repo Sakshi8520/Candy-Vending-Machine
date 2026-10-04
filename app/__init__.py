@@ -2,6 +2,7 @@ from flask import Flask,request,jsonify,current_app
 from app.extensions import db,jwt,migrate
 from app.auth.routes import auth_bp
 from app.admin.routes import admin_bp
+from app.main import main_bp
 from app import models
 from app.exceptions import UserNotFoundError
 from app.exceptions import InsufficientBalanceError
@@ -191,6 +192,7 @@ def create_app():
 
 	app.register_blueprint(auth_bp,url_prefix="/auth")
 	app.register_blueprint(admin_bp,url_prefix="/admin")
+	app.register_blueprint(main_bp)
 	app.wsgi_app = SimpleMiddleware(app.wsgi_app)
 	app.wsgi_app = SecondMiddleware(app.wsgi_app)
 	return app

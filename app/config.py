@@ -25,13 +25,13 @@ class DevelopmentConfig(Config):
 	DEBUG = True
 	TESTING = False
 	LOG_LEVEL = logging.DEBUG
-	#SQLALCHEMY_DATABASE_URI = "postgresql://localhost/candy_dev"
+	#SQLALCHEMY_DATABASE_URI = "postgresql://localhost/candy"
 
 class ProductionConfig(Config):
 	DEBUG = False
 	TESTING = False
 	JWT_COOKIE_SECURE = True
-	#SQLALCHEMY_DATABASE_URI = "postgresql://localhost/candy"
+	SQLALCHEMY_DATABASE_URI = os.getenv("PRODUCTION_DATABASE_URL")
 	
 class TestingConfig(Config):
 	SQLALCHEMY_DATABASE_URI = os.getenv("TEST_DATABASE_URL")

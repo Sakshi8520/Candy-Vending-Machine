@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candy Vending Machine</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head><body><header class="navbar">
+    <div class="logo">🍬 Candy Machine</div>
+
+    <nav>
+        <a href="{{ url_for('main.home') }}">Home</a>
+        <a href="#">Candies</a>
+        <a href="{{ url_for('main.login_page') }}">Login</a>
+        <a href="#" class="nav-button">Register</a>
+    </nav>
+</header>
+
+<main>
+
+    <section class="hero">
+        <div class="hero-content">
+            <p class="eyebrow">YOUR DIGITAL CANDY MACHINE</p>
+
+            <h1>
+                Grab a little sweetness.
+                <span>Anytime.</span>
+            </h1>
+
+            <p class="hero-text">
+                A backend-powered candy vending machine built with
+                Flask, PostgreSQL and real transaction handling.
+            </p>
+
+            <div class="hero-buttons">
+                <a href="#" class="primary-button">Browse Candies</a>
+                <a href="#" class="secondary-button">Create Account</a>
+            </div>
+        </div>
+
+        <div class="machine">
+            <div class="machine-top">🍬</div>
+
+            <div class="machine-screen">
+                READY
+            </div>
+
+            <div class="candy-row">
+                <div>🍫</div>
+                <div>🍬</div>
+                <div>🍭</div>
+            </div>
+
+            <div class="machine-slot">
+                INSERT COINS
+            </div>
+        </div>
+    </section>
+
+
+    <section class="features">
+
+        <div class="feature-card">
+            <div class="feature-icon">🔐</div>
+            <h3>Secure Authentication</h3>
+            <p>
+                JWT-based authentication with protected endpoints.
+            </p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">💳</div>
+            <h3>Real Transactions</h3>
+            <p>
+                Wallet balances, purchases, tickets and ledger records.
+            </p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">🗄️</div>
+            <h3>PostgreSQL Backend</h3>
+            <p>
+                Production database running on Supabase.
+            </p>
+        </div>
+
+    </section>
+
+
+    <section class="about">
+        <p class="eyebrow">BUILT FOR THE WEB</p>
+
+        <h2>More than just a vending machine.</h2>
+
+        <p>
+            Every purchase passes through validation, authentication,
+            inventory checks and database transactions before the candy
+            is dispensed.
+        </p>
+    </section>
+
+</main>
+
+
+<footer>
+    <p>🍬 Candy Vending Machine</p>
+    <p>Built with Flask · PostgreSQL · SQLAlchemy</p>
+</footer>
+
+</body>
+</html>

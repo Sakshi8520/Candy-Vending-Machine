@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login - Candy Vending Machine</title>
+</head>
+
+<body>
+
+    <h1>Login</h1>
+
+    <form id="login-form">
+        <label>Username</label>
+        <input type="text" name="username" id="username">
+
+        <label>Password</label>
+        <input type="password" name="password" id="password">
+
+        <button type="submit">Login</button>
+    </form>
+
+    <p id="message"></p>
+
+</body>
+<script src="{{ url_for('static',filename='js/login.js') }}"></script>
+</html>
