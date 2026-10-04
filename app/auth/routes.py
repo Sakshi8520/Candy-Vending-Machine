@@ -30,6 +30,7 @@ from app.token_blocklist import revoked_tokens
 from flask import make_response
 
 
+auth_bp = Blueprint("auth",__name__)
 
 #Sign up
 @auth_bp.route("/sign_up",methods=["POST"])
