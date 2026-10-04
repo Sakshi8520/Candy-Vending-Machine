@@ -58,33 +58,9 @@ def sign_up():
 	db.session.commit()
 	print(new_user.id)
 	print(new_wallet.id,new_wallet.user_id,new_wallet.balance)
-	current_app.logger.info(f"User {user.id} created their account and got a {new_wallet.balance} worth welcome bonus")
+	current_app.logger.info(f"User {new_user.id} created their account and got a {new_wallet.balance} worth welcome bonus")
 
 	return jsonify({"msg":f'You are registered successfully {new_user.username}, you got a {new_wallet.balance} worth welcome bonus'})
-
-
-#Database Transactions
-@auth_bp.post("/test_transaction/<int:wallet_id>/<int:candy_id>")
-def test_transaction(wallet_id,candy_id):
-	wallet = Wallet.query.get(wallet_id)
-	candy = Candy.query.get(candy_id)
-	print("BEFORE:",wallet.balance,candy.stock)
-	try:
-		wallet.balance -= 100
-		candy.stock -= 1
-		print("AFTER CHANGES:", wallet.balance,candy.stock)
-		#raise Exception("Intentional transaction failure")
-		db.session.commit()
-	except Exception:
-		db.session.rollback()
-		raise 
-	return {"message":"Transaction Successful"}
-
-@auth_bp.route("/test_cookie")
-def test_cookie():
-	response = make_response({"msg":"cookie set"})
-	response.set_cookie("candy_test","Kitkat",httponly=True,secure=False,samesite="None")
-	return response
 
 	
 #Log in
