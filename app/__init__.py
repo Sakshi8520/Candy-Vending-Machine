@@ -143,7 +143,7 @@ def create_app():
 	if environment == "testing":
 		require_env("TEST_DATABASE_URL")
 	else: 
-		require_env("DATABASE_URL")
+		require_env("PRODUCTION_DATABASE_URL")
 	require_env("JWT_SECRET_KEY")
 	require_env("SECRET_KEY")
 	require_env("FRONTEND_ORIGIN")
