@@ -28,12 +28,13 @@ from app.extensions import limiter
 from flask_jwt_extended import get_jwt
 from app.token_blocklist import revoked_tokens
 from flask import make_response
+from app.auth import services
 
 
 auth_bp = Blueprint("auth",__name__)
 
 #Sign up
-@auth_bp.route("/sign_up",methods=["POST"])
+@auth_bp.route("/users/sign_up",methods=["POST"])
 @limiter.limit("5 per minute")
 def sign_up():
 	data = request.get_json()
@@ -61,6 +62,7 @@ def sign_up():
 	current_app.logger.info(f"User {new_user.id} created their account and got a {new_wallet.balance} worth welcome bonus")
 
 	return jsonify({"msg":f'You are registered successfully {new_user.username}, you got a {new_wallet.balance} worth welcome bonus'})
+
 
 	
 #Log in
@@ -122,8 +124,11 @@ def refresh():
 @auth_bp.route("/users/me",methods=["GET"])
 @jwt_required()
 def me():
-	current_user = get_jwt_identity()
-	return jsonify(logged_in_as = current_user)
+	username = get_jwt_identity()
+	user = User.query.filter_by(username=username).first()
+	return jsonify({
+	"username":user.username,
+	"balance": user.wallet.balance}),200
 			
 
 @auth_bp.route("/candy/purchase",methods=["POST"])
@@ -206,6 +211,27 @@ def buy_candy():
 		raise
 		
 
+@auth_bp.get("/candies")
+def get_candy():
+	min_price = request.args.get("min_price",type=int)
+	max_price = request.args.get("max_price",type=int)
+	search = request.args.get("search")
+	query = Candy.query
+	#if not candy:
+		#raise CandyNotFoundError()
+	if min_price is not None:
+		query = query.filter(Candy.price>=min_price)
+	if max_price is not None:
+		query = query.filter(Candy.price<=max_price)
+	if search:
+		query = query.filter(Candy.candy_name.ilike(f"%{search}%"))
+	candies = query.all()
+	schema = CandySchema(many=True)
+	data = schema.dump(candies)
+	return jsonify({
+		"data":data
+		})
+
 @auth_bp.route("/ticket/view/<int:ticket_id>",methods=["GET"])
 @jwt_required()
 def view_ticket(ticket_id):
@@ -220,6 +246,8 @@ def view_ticket(ticket_id):
 		else:
 			raise TicketNotFoundError()
 	return jsonify({"msg":"Invalid credentials"})
+
+
 
 @auth_bp.route("/user/ticket",methods=["GET"])
 @jwt_required()

@@ -1,13 +1,16 @@
-const form = document.getElementById("login-form");
+console.log("signup.json loaded!")
+
+const form = document.getElementById("signup-form");
 
 form.addEventListener("submit", function(event) {
     event.preventDefault();
     
+    console.log("signup form submitted!")
 
 const username = document.getElementById("username").value;
 const password = document.getElementById("password").value;
 
-    fetch("/auth/users/log_in", {
+    fetch("/auth/users/sign_up", {
     method: "POST",
     headers: {
         "Content-Type": "application/json"

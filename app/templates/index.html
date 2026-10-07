@@ -10,9 +10,9 @@
 
     <nav>
         <a href="{{ url_for('main.home') }}">Home</a>
-        <a href="#">Candies</a>
+        <a href="{{ url_for('main.candies_page') }}">Candies</a>
         <a href="{{ url_for('main.login_page') }}">Login</a>
-        <a href="#" class="nav-button">Register</a>
+        <a href="{{ url_for('main.signup_page') }}" class="nav-button">Register</a>
     </nav>
 </header>
 
@@ -28,13 +28,13 @@
             </h1>
 
             <p class="hero-text">
-                A backend-powered candy vending machine built with
-                Flask, PostgreSQL and real transaction handling.
+                A production-oriented backend-powered candy vending machine built with
+                Flask, PostgreSQL, automated testing, CI/CD and real transaction handling.
             </p>
 
             <div class="hero-buttons">
-                <a href="#" class="primary-button">Browse Candies</a>
-                <a href="#" class="secondary-button">Create Account</a>
+                <a href="{{ url_for('main.candies_page') }}" class="primary-button">Browse Candies</a>
+                <a href="{{ url_for('main.signup_page') }}" class="secondary-button">Create Account</a>
             </div>
         </div>
 

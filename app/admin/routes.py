@@ -8,7 +8,7 @@ from app.extensions import limiter
 from app.decorators import admin_required
 
 admin_bp = Blueprint("admin",__name__)
-@admin_bp.route("/test")
+@admin_bp.route("/create_admin",methods=["POST"])
 def create_admin():
 	existing_admin = User.query.filter_by(username="admin").first()
 	if existing_admin:

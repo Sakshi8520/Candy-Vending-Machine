@@ -2,6 +2,7 @@ from flask import Flask,request,jsonify,current_app
 from app.extensions import db,jwt,migrate
 from app.auth.routes import auth_bp
 from app.admin.routes import admin_bp
+from app.auth.services import services_bp
 from app.main import main_bp
 from app import models
 from app.exceptions import UserNotFoundError

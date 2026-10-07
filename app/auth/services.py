@@ -30,6 +30,7 @@ from app.token_blocklist import revoked_tokens
 from flask import make_response
 
 
+
 from PIL import Image
 
 ALLOWED_EXTENSIONS = {"jpg","jpeg","png","jfif"}
@@ -38,8 +39,8 @@ schema = CandyPurchaseSchema()
 user_schema = UserSchema()
 
 #JSON body-
-auth_bp = Blueprint("auth",__name__)
-@auth_bp.post("/test_candy")
+services_bp = Blueprint("services", __name__)
+@services_bp.post("/test_candy")
 def Test_auth():
 	data = request.get_json()
 	candy_id = data.get("candy_id")
@@ -65,7 +66,7 @@ def Test_auth():
 
 
 #Test Gunicorn
-@auth_bp.get("/debug/workers")
+@services_bp.get("/debug/workers")
 def debug_workers():
 	return {
 	"process_id":os.getpid(),
@@ -74,13 +75,13 @@ def debug_workers():
 
 #Test gunicorn workers vs threads
 #I/O route
-@auth_bp.route("/slow")
+@services_bp.route("/slow")
 def slow():
 	time.sleep(5)
 	return "Finised"
 
 #Test CPU heavy route
-@auth_bp.route("/cpu")
+@services_bp.route("/cpu")
 def cpu():
 	start = time.time()
 	while time.time() - start < 5:
@@ -88,7 +89,7 @@ def cpu():
 	return "CPU work finished"
 
 #path parameters-
-@auth_bp.get("/test_user/<int:user_id>")
+@services_bp.get("/test_user/<int:user_id>")
 def test_user(user_id):
 	return {
 	"user_id":user_id,
@@ -96,7 +97,7 @@ def test_user(user_id):
 	}
 
 #Query parameter-
-@auth_bp.get("/test_search")
+@services_bp.get("/test_search")
 def test_search():
 	name = request.args.get("name")
 	age = request.args.get("age",type=int)
@@ -107,7 +108,7 @@ def test_search():
 	}
 
 #request.header
-@auth_bp.get("/test_headers")
+@services_bp.get("/test_headers")
 def test_headers():
 	return {
 	"content_type": request.headers.get("Content-Type"),
@@ -116,7 +117,7 @@ def test_headers():
 	}
 
 #Form data
-@auth_bp.post("/test_form")
+@services_bp.post("/test_form")
 def test_form():
 	name = request.form.get("name")
 	age = request.form.get("age")
@@ -127,7 +128,7 @@ def test_form():
 	}
 
 #PATCH + Partial validation
-@auth_bp.patch("/test_partial")
+@services_bp.patch("/test_partial")
 def test_partial():
 	data = request.get_json()
 	result = user_schema.load(data,partial=True)
@@ -136,7 +137,7 @@ def test_partial():
 	}
 
 #File Upload
-@auth_bp.post("/test_upload")
+@services_bp.post("/test_upload")
 def test_upload():
 	file = request.files.get("file")
 	if not file:
@@ -172,7 +173,7 @@ def test_upload():
 			}
 
 #Multiple file uploads
-@auth_bp.post("/test_multiple_upload")
+@services_bp.post("/test_multiple_upload")
 def test_multiple_upload():
 	files = request.files.getlist("files")
 	return {
@@ -180,8 +181,33 @@ def test_multiple_upload():
 		"filenames":[file.filename for file in files]
 	}
 
+#Database Transactions
+@services_bp.post("/test_transaction/<int:wallet_id>/<int:candy_id>")
+def test_transactions(wallet_id,candy_id):
+	wallet = Wallet.query.get(wallet_id)
+	candy = Candy.query.get(candy_id)
+	print("BEFORE:",wallet.balance,candy.stock)
+	try:
+		wallet.balance -= 100
+		candy.stock -= 1
+		print("AFTER CHANGES:", wallet.balance,candy.stock)
+		#raise Exception("Intentional transaction failure")
+		db.session.commit()
+	except Exception:
+		db.session.rollback()
+		raise 
+	return {"message":"Transaction Successful"}
+
+@services_bp.route("/test_cookie")
+def test_cookies():
+	response = make_response({"msg":"cookie set"})
+	response.set_cookie("candy_test","Kitkat",httponly=True,secure=False,samesite="None")
+	return response
+
+
+
 #file+normal form data together
-@auth_bp.post("/test_form_upload")
+@services_bp.post("/test_form_upload")
 def test_form_upload():
 	name = request.form.get("name")
 	price = request.form.get("price")
@@ -195,9 +221,10 @@ def test_form_upload():
 			"filename":file.filename if file else None
 		}
 
+gi
 
 #Database Transactions
-@auth_bp.post("/test_transaction/<int:wallet_id>/<int:candy_id>")
+@services_bp.post("/test_transaction/<int:wallet_id>/<int:candy_id>")
 def test_transaction(wallet_id,candy_id):
 	wallet = Wallet.query.get(wallet_id)
 	candy = Candy.query.get(candy_id)
@@ -213,35 +240,16 @@ def test_transaction(wallet_id,candy_id):
 		raise 
 	return {"message":"Transaction Successful"}
 
-@auth_bp.route("/test_cookie")
+@services_bp.route("/test_cookie")
 def test_cookie():
 	response = make_response({"msg":"cookie set"})
 	response.set_cookie("candy_test","Kitkat",httponly=True,secure=False,samesite="None")
 	return response
 
 
-@auth_bp.get("/candies")
-def get_candy():
-	min_price = request.args.get("min_price",type=int)
-	max_price = request.args.get("max_price",type=int)
-	search = request.args.get("search")
-	query = Candy.query
-	#if not candy:
-		#raise CandyNotFoundError()
-	if min_price is not None:
-		query = query.filter(Candy.price>=min_price)
-	if max_price is not None:
-		query = query.filter(Candy.price<=max_price)
-	if search:
-		query = query.filter(Candy.candy_name.ilike(f"%{search}%"))
-	candies = query.all()
-	schema = CandySchema(many=True)
-	data = schema.dump(candies)
-	return jsonify({
-		"data":data
-		})
 
-@auth_bp.post("/candies/<int:candy_id>/image")
+
+@services_bp.post("/candies/<int:candy_id>/image")
 @limiter.limit("5 per minute")
 def upload_candy_image(candy_id):
 	candy = Candy.query.get(candy_id)
@@ -267,7 +275,7 @@ def upload_candy_image(candy_id):
 	},201
 
 #Return uploaded files
-@auth_bp.get("/get_candies/<int:candy_id>/image")
+@services_bp.get("/get_candies/<int:candy_id>/image")
 def get_candy_image(candy_id):
 	candy = Candy.query.get(candy_id)
 	if not candy:
@@ -287,7 +295,7 @@ def get_candy_image(candy_id):
 
 
 #Pagination
-@auth_bp.get("/test_pagination")
+@services_bp.get("/test_pagination")
 @limiter.limit("30 per minute")
 def test_pagination():
 	page = request.args.get("page",1,type=int)
@@ -334,7 +342,7 @@ def test_pagination():
 	}
 
 #Test logging error-
-@auth_bp.get("/test_logging_error")
+@services_bp.get("/test_logging_error")
 def test_logging_error():
 	try:
 		number = 10/0
@@ -345,43 +353,15 @@ def test_logging_error():
 
 
 #rate limiter
-@auth_bp.route("/test_rate")
+@services_bp.route("/test_rate")
 @limiter.limit("1 per minute")
 def test_rate():
 	return {"message":"Done"}
-#Sign up
-@auth_bp.route("/sign_up",methods=["POST"])
-@limiter.limit("5 per minute")
-def sign_up():
-	data = request.get_json()
-	username = data.get("username")
-	password = data.get("password")
-	hashed_password = generate_password_hash(password)
-	existing_user = User.query.filter_by(username=username).first()
-	print("Username received:", username)
-	print("Existing user:", existing_user)
-	if existing_user:
-		return jsonify({"message":"Username already taken"})
-	new_user = User(
-		username=username,
-		password=hashed_password)
-	if len(password)<8:
-		return jsonify({"msg":"Password too short!"})
-	new_wallet = Wallet(
-		balance = Config.WELCOME_BONUS)
-	new_user.wallet = new_wallet
-	db.session.add(new_user)
-	db.session.add(new_wallet)
-	db.session.commit()
-	print(new_user.id)
-	print(new_wallet.id,new_wallet.user_id,new_wallet.balance)
-	current_app.logger.info(f"User {user.id} created their account and got a {new_wallet.balance} worth welcome bonus")
 
-	return jsonify({"msg":f'You are registered successfully {new_user.username}, you got a {new_wallet.balance} worth welcome bonus'})
 
 
 #Database Transactions
-@auth_bp.post("/test_transaction/<int:wallet_id>/<int:candy_id>")
+@services_bp.post("/test_transaction/<int:wallet_id>/<int:candy_id>")
 def test_transaction(wallet_id,candy_id):
 	wallet = Wallet.query.get(wallet_id)
 	candy = Candy.query.get(candy_id)
@@ -397,13 +377,13 @@ def test_transaction(wallet_id,candy_id):
 		raise 
 	return {"message":"Transaction Successful"}
 
-@auth_bp.route("/test_cookie")
+@services_bp.route("/test_cookie")
 def test_cookie():
 	response = make_response({"msg":"cookie set"})
 	response.set_cookie("candy_test","Kitkat",httponly=True,secure=False,samesite="None")
 	return response
 
-@auth_bp.get("/test-users")
+@services_bp.get("/test-users")
 def test_users():
 	page = request.args.get("page", 1, type=int)
 	per_page = request.args.get("per_page", 2, type=int)

@@ -2,24 +2,40 @@
 <html>
 <head>
     <title>Login - Candy Vending Machine</title>
+    <link rel="stylesheet" href=" {{ url_for('static',filename='css/style.css') }}">
 </head>
 
-<body>
+<body class="auth-page">
 
-    <h1>Login</h1>
+    <div class="auth-container">
 
-    <form id="login-form">
-        <label>Username</label>
-        <input type="text" name="username" id="username">
+        <h1>Login</h1>
 
-        <label>Password</label>
-        <input type="password" name="password" id="password">
+        <p class="auth-subtitle">
+            Welcome back! Grab something sweet.
+        </p>
 
-        <button type="submit">Login</button>
-    </form>
+        <form id="login-form" class="auth-form">
 
-    <p id="message"></p>
+            <label>Username</label>
+            <input type="text" id="username" name="username">
+
+            <label>Password</label>
+            <input type="password" id="password" name="password">
+
+            <button type="submit">Login</button>
+
+        </form>
+
+        <p id="message" class="auth-message"></p>
+
+        <p class="auth-switch">
+            Don't have an account?
+            <a href="{{ url_for('main.signup_page') }}">Sign Up</a>
+        </p>
+
+    </div>
+
+    <script src="{{ url_for('static', filename='js/login.js') }}"></script>
 
 </body>
-<script src="{{ url_for('static',filename='js/login.js') }}"></script>
-</html>

@@ -14,3 +14,4 @@ app/logs/
 app/uploads/
 *.log
 downloaded.jfif
+*seed_demo.py
