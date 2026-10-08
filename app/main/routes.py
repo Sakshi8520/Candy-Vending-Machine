@@ -16,3 +16,8 @@ def signup_page():
 @main_bp.route("/buy_candy")
 def candies_page():
 	return render_template("candies.html")
+
+#Liveness check
+@main_bp.route("/health")
+def health():
+	return {"status":"ok"}, 200
